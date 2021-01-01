@@ -4,7 +4,7 @@ Managing dotfiles in the pre-post-covid19-era.
 
 ## Motivation
 
-Prior I used this [repo for my dotfiles](https://github.com/rscircus/dotfiles). It is a tangled mess of config files, scripts, Makefiles and package managers. Trailing the current \*nix trends towards a more and more spaghetti like state of package management[<sup id="fn1">1</sup>](#fn1).
+Prior I used this [repo for my dotfiles](https://github.com/rscircus/dotfiles). It is a tangled mess of config files, scripts, Makefiles and package managers. Trailing the current \*nix trends towards a more and more spaghetti like state of package management[<sup>1</sup>](#fn1).
 
 After reading about these two approaches:
 
@@ -68,4 +68,4 @@ xargs -I{} mv {} .config-backup/{}
 
 ### Footnotes
 
-[<a name="#fn1">1</a>]: I'm looking at you AppImage, snap, flathub, yarn, npm, brew, rpm, deb, tar.gz, and what not.
+[<a name="fn1">1</a>]: I'm looking at you AppImage, snap, flathub, yarn, npm, brew, rpm, deb, tar.gz, and what not.
