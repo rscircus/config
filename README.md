@@ -68,4 +68,4 @@ xargs -I{} mv {} .config-backup/{}
 
 ### Footnotes
 
-[<a name="fn1">1</a>]: I'm looking at you AppImage, snap, flathub, yarn, npm, brew, rpm, deb, tar.gz, and what not.
+[<a name="#fn1">1</a>]: I'm looking at you AppImage, snap, flathub, yarn, npm, brew, rpm, deb, tar.gz, and what not.
