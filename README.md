@@ -1,6 +1,6 @@
 # config - moving dotfiles
 
-Dotfiles for the 20th century.
+Managing dotfiles in the pre-post-covid19-era.
 
 ## Motivation
 
@@ -29,7 +29,20 @@ config config --local status.showUntrackedFiles no
 echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
 ```
 
+and avoid tangling with git
+
+```bash
+echo ".src/config" >> .gitignore
+```
+
+If you are prepared, you can checkout directly:
+
+```bash
+config checkout
+```
+
 Worfklow feels like
+
 ```bash
 config status
 config add .vimrc
