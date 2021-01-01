@@ -58,7 +58,7 @@ It's basically git in your `$HOME` without gitting everything in your `$HOME`.
 
 ## Tips & Tricks
 
-You can't checkout, backup the stuff which git/config wants to overwrite:
+If you can't checkout, backup the stuff which git/config refuses to overwrite:
 
 ```bash
 mkdir -p .config-backup && \
