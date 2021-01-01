@@ -13,6 +13,34 @@ After reading about these two approaches:
 
 I figured, that I'll use the prior. Eventually you'll find this: https://dotfiles.github.io/tutorials/ on your journey. It is a freaking rabbit hole... don't go there. You lose, the bank always wins.
 
+## Usage
+
+Clone this config like so:
+
+```bash
+mkdir -p $HOME/.src
+git clone --bare https://github.com/rscircus/config $HOME/.src/config
+```
+And then alias it
+
+```bash
+alias config='/usr/bin/git --git-dir=$HOME/.src/config --work-tree=$HOME'
+config config --local status.showUntrackedFiles no
+echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
+```
+
+Worfklow feels like
+```bash
+config status
+config add .vimrc
+config commit -m "Add vimrc"
+config add .bashrc
+config commit -m "Add bashrc"
+config push
+```
+
+It's basically git in your `$HOME` without gitting everything in your `$HOME`.
+
 * * *
 
 ### Footnotes
