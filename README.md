@@ -56,6 +56,16 @@ It's basically git in your `$HOME` without gitting everything in your `$HOME`.
 
 * * *
 
+## Tips & Tricks
+
+You can't checkout, backup the stuff which git/config wants to overwrite:
+
+```bash
+mkdir -p .config-backup && \
+config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | \
+xargs -I{} mv {} .config-backup/{}
+```
+
 ### Footnotes
 
 [<a name="fn1">1</a>]: I'm looking at you AppImage, snap, flathub, yarn, npm, brew, rpm, deb, tar.gz, and what not.
