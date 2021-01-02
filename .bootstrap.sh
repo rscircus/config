@@ -28,3 +28,13 @@ sudo apt install fd-find
 ## emacs
 
 sudo apt install emacs
+
+### Configure
+
+git clone https://github.com/rscircus/doom .doom.d
+git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
+~/.emacs.d/bin/doom install
+
+## TODO: openvpn
+
+sudo apt install network-manager-openvpn-gnome
