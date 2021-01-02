@@ -2,6 +2,8 @@
 
 ## Nvim
 
+sudo apt install neovim
+
 mkdir -p ~/.config/nvim/
 mkdir -p ~/.local/share/nvim/site
 mkdir -p ~/.local/share/nvim/site/autoload
@@ -14,3 +16,15 @@ mkdir -p ~/.tmux/plugins
 ### Plugins
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+## ripgrep
+
+sudo apt install ripgrep
+
+## find
+
+sudo apt install fd-find
+
+## emacs
+
+sudo apt install emacs
