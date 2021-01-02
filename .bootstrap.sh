@@ -1,5 +1,9 @@
 # This file prepares $HOME to receive a bunch of files from the repo
 
+## TLDR
+
+sudo apt install tldr
+
 ## Nvim
 
 sudo apt install neovim
