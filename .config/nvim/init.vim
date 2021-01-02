@@ -1,3 +1,4 @@
+" vim:fdm=marker
 " A good engineer invests time in crafting his tools.
 "
 " Author: Roland Siegbert <roland@siegbert.info>
@@ -14,16 +15,19 @@ Plug 'rscircus/acme-colors'
 "" IDE:
 
 " Autocompletion
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'ackyshake/VimCompletesMe'
 
 " Git
 Plug 'tpope/vim-fugitive'
+
+" Syntastic
+Plug 'scrooloose/syntastic'
 
 " FZF
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --no-update-rc' }
 Plug 'junegunn/fzf.vim'
 
-" search and replace
+" Search and replace over many files
 Plug 'brooth/far.vim'
 
 " Async make
@@ -42,8 +46,13 @@ Plug 'ntpeters/vim-better-whitespace'
 " Scroll position
 Plug 'flebel/vim-scroll-position'
 
-" Neoterm
-Plug 'kassio/neoterm'
+" Highlight yank
+Plug 'machakann/vim-highlightedyank'
+
+"" Writing:
+
+" Tranquility
+Plug 'junegunn/goyo.vim'
 
 " Markdown
 Plug 'godlygeek/tabular'
@@ -69,12 +78,54 @@ call plug#end()
 
 color acme
 
+" Junk
+set cursorline " highlight cursorline
+set encoding=utf-8 nobomb " BOM sucks
 set splitright                " split windows always vertically
 set mouse=a                   " respect the mouse
-set nohlsearch                " top the highlighting for the 'hlsearch' option.  It
-
+set ignorecase                  " searches are case insensitive...
+set smartcase                   " ... unless they contain at least one capital letter`
+set showmatch                   " show matches
+set gdefault                    " replacing globally is default
+set incsearch                   " incremental searching
+set nohlsearch
 set number                    " show current line number on the left
 set relativenumber            " show all other line numbers relative
+set autoindent " keep indent from line to line
+set expandtab " Expand tabs to spaces
+set backspace=indent,eol,start
+set formatoptions=
+set formatoptions+=c " Format comments
+set formatoptions+=r " Continue comments by default
+set formatoptions+=o " Make comment when using o or O from comment line
+set formatoptions+=q " Format comments with gq
+set formatoptions+=n " Recognize numbered lists
+set formatoptions+=2 " Use indent from 2nd line of a paragraph
+set formatoptions+=l " Don't break lines that are already long
+set formatoptions+=1 " Break before 1-letter words
+
+" Handling Undo/Backup/Swap: {{{
+" Create ~/.config/nvim/files if not existing
+if exists('*mkdir') && !isdirectory($HOME.'/.config/nvim/files')
+  call mkdir($HOME.'/.config/nvim/files')
+  call mkdir($HOME.'/.config/nvim/files/backup')
+  call mkdir($HOME.'/.config/nvim/files/undo')
+  call mkdir($HOME.'/.config/nvim/files/info')
+endif
+
+if has('persistent_undo')
+    set undofile             " creates a <FILENAME>.un~ for eternal editing
+    set undolevels=1000
+    set undodir=$HOME/.config/nvim/files/undo/
+    set undoreload=10000
+endif
+
+set backup
+set backupdir   =$HOME/.config/nvim/files/backup/
+set backupext   =-vimbackup
+set backupskip  =
+set noswapfile " because there is git
+" }}}
 
 " ignore a bunch of files
 set wildmode=list:longest,list:full       " show all
@@ -84,6 +135,54 @@ set wildignore+=*.bmp,*.gif,*.ico,*.jpg,*.png
 set wildignore+=.DS_Store
 set wildignore+=*~,*.swp,*.tmp
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*   " for Linux/MacOSX
+
+silent! helptags ALL          " Generate help tags automatically
+
+" Integrated Terminal configuration
+"
+" open new split panes to right and below
+set splitright
+set splitbelow
+
+" turn terminal to normal mode with escape
+tnoremap <Esc> <C-\><C-n>
+" start terminal in insert mode
+au BufEnter * if &buftype == 'terminal' | :startinsert | endif
+" open terminal on ctrl+n
+function! OpenTerminal()
+  split term://bash
+  resize 10
+endfunction
+nnoremap <leader>tl :call OpenTerminal()<CR>
+
+" Speed up transition from modes
+if !has('gui_running')
+  set ttimeoutlen=10
+  augroup FastEscape
+    autocmd!
+    au InsertEnter * set timeoutlen=0
+    au InsertLeave * set timeoutlen=1000
+  augroup END
+endif
+" }}}
+
+" Word Processor Mode
+augroup word_processor_mode
+  autocmd!
+
+  function! WordProcessorMode() " {{{
+    setlocal formatoptions=t1
+    map j gj
+    map k gk
+    setlocal smartindent
+    setlocal spell spelllang=en_ca
+    setlocal noexpandtab
+    setlocal wrap
+    setlocal linebreak
+    Goyo 100
+  endfunction " }}}
+  com! WP call WordProcessorMode()
+augroup END
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " }}} Basic Settings
@@ -95,6 +194,10 @@ set wildignore+=*/.git/*,*/.hg/*,*/.svn/*   " for Linux/MacOSX
 
 let mapleader = ","
 let maplocalleader = "\<Space>"
+
+" Curosorline
+:hi CursorLine ctermbg=white guibg=white cterm=none gui=none
+:nnoremap <leader>H :set cursorline!<CR>
 
 " Edit this file
 nnoremap <leader>rc <C-w><C-v><C-l>:e $MYVIMRC<cr>
@@ -119,6 +222,19 @@ nmap <leader>tw :StripWhitespace<cr>
 nmap <F7> a<C-R>=strftime("%Y-%m-%d %H:%M")<CR><Esc>
 imap <F7> <C-R>=strftime("%Y-%m-%d %H:%M")<CR>
 smap <F7> <C-R>=strftime("%Y-%m-%d %H:%M")<CR>
+
+" Highlight/Unhighlight search
+nmap <leader>h :set nohlsearch!<cr>
+noremap / /\v
+vnoremap / /\v
+
+" Speed up viewport scroll
+nnoremap <C-e> 3<C-e>
+nnoremap <C-y> 3<C-y>`
+
+noremap <leader>W :w !sudo tee %<CR> " sudo write
+
+map <leader>qq :cclose<CR> " close quickfix window
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " }}} Keyboard Shortcuts
@@ -228,6 +344,15 @@ let g:vim_markdown_math = 1
 let g:vim_markdown_frontmatter = 1  " for YAML format
 let g:vim_markdown_toml_frontmatter = 1  " for TOML format
 let g:vim_markdown_json_frontmatter = 1  " for JSON format
+
+" Syntastic.vim {{{
+augroup syntastic_config
+  autocmd!
+  let g:syntastic_error_symbol = '✗'
+  let g:syntastic_warning_symbol = '⚠'
+  let g:syntastic_ruby_checkers = ['mri', 'rubocop']
+augroup END
+" }}}
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " }}} Plugins Settings
