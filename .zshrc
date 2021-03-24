@@ -106,9 +106,6 @@ alias vman='vman'
 alias config='/usr/bin/git --git-dir=$HOME/.src/config --work-tree=$HOME'
 alias _='sudo'
 
-# Flatpak - TODO: Not sure if I like this
-alias codium="flatpak run com.vscodium.codium"
-
 # Poetry
 source $HOME/.poetry/env
 
@@ -121,3 +118,43 @@ export PATH=$PATH:$GOPATH/bin
 
 # We want vi mode
 bindkey -v
+
+# vi style incremental search
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+bindkey '^P' history-search-backward
+bindkey '^N' history-search-forward
+bindkey '^K' kill-line
+
+# Ignore duplicates
+setopt BANG_HIST                 # Treat the '!' character specially during expansion.
+setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+setopt SHARE_HISTORY             # Share history between all sessions.
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
+setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
+setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
+setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
+setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
+setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file.
+setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
+setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
+setopt HIST_BEEP                 # Beep when accessing nonexistent history.
+
+autoload edit-command-line
+zle -N edit-command-line
+bindkey '^Xe' edit-command-line
+
+# CTRL-SPACE accept autosuggestion:
+bindkey '^ ' autosuggest-accept
+
+# pyenv
+export PATH="/home/roland/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+# local/bin
+export PATH=$PATH:$HOME/.local/bin
+
+# flatpaks - TODO: better? Shouldn't the OS manage this?
+export emacs="/usr/bin/flatpak run org.gnu.emacs"
