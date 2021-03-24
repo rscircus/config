@@ -9,16 +9,35 @@
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 call plug#begin('~/.config/nvim/plugged')
 
-"" color themes
+"" UI:
+
+" color themes
 Plug 'rscircus/acme-colors'
+Plug 'robertmeta/nofrils'
+Plug 'chriskempson/base16-vim'
+
+" airline
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 "" IDE:
 
-" Autocompletion
-Plug 'ackyshake/VimCompletesMe'
+" Autocomplete
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
+Plug 'ncm2/ncm2-jedi'
+
+" Formatter
+Plug 'Chiel92/vim-autoformat'
+
+" Tagbar - document outline
+Plug 'preservim/tagbar'
 
 " Git
 Plug 'tpope/vim-fugitive'
+Plug 'ruanyl/vim-gh-line'
 
 " Syntastic
 Plug 'scrooloose/syntastic'
@@ -56,6 +75,7 @@ Plug 'junegunn/goyo.vim'
 
 " Markdown
 Plug 'godlygeek/tabular'
+Plug 'dhruvasagar/vim-table-mode'
 Plug 'plasticboy/vim-markdown'
 
 " JSON front matter highlight plugin
@@ -65,6 +85,9 @@ Plug 'elzr/vim-json'
 
 " nim-lang.org
 Plug 'alaviss/nim.nvim'
+
+" go-lang
+Plug 'fatih/vim-go'
 
 call plug#end()
 
@@ -76,7 +99,23 @@ call plug#end()
 " Basic Settings: {{{
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-color acme
+" colorscheme
+let base16colorspace=256
+"colorscheme base16-one-light
+colorscheme acme
+"set background=light
+
+" True Color Support if it's avaiable in terminal
+if has("termguicolors")
+    set termguicolors
+endif
+if has("gui_running")
+  set guicursor=n-v-c-sm:block,i-ci-ve:block,r-cr-o:blocks
+endif
+
+" TODO: old love...
+"color acme
+
 
 " Junk
 set cursorline " highlight cursorline
@@ -150,10 +189,10 @@ tnoremap <Esc> <C-\><C-n>
 au BufEnter * if &buftype == 'terminal' | :startinsert | endif
 " open terminal on ctrl+n
 function! OpenTerminal()
-  split term://bash
+  split term://zsh
   resize 10
 endfunction
-nnoremap <leader>tl :call OpenTerminal()<CR>
+nnoremap <leader>:call OpenTerminal()<CR>
 
 " Speed up transition from modes
 if !has('gui_running')
@@ -196,7 +235,7 @@ let mapleader = ","
 let maplocalleader = "\<Space>"
 
 " Curosorline
-:hi CursorLine ctermbg=white guibg=white cterm=none gui=none
+":hi CursorLine ctermbg=white guibg=white cterm=none gui=none
 :nnoremap <leader>H :set cursorline!<CR>
 
 " Edit this file
@@ -320,6 +359,9 @@ autocmd BufEnter * call SyncTree()
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 
+"" Tagbar
+nmap <leader>t :TagbarToggle<CR>
+
 "" TmuxNavigator:
 let g:tmux_navigator_save_on_switch = 2
 let g:tmux_navigator_no_mappings = 1
@@ -344,6 +386,70 @@ let g:vim_markdown_math = 1
 let g:vim_markdown_frontmatter = 1  " for YAML format
 let g:vim_markdown_toml_frontmatter = 1  " for TOML format
 let g:vim_markdown_json_frontmatter = 1  " for JSON format
+
+" vim-autoformat
+noremap <F3> :Autoformat<CR>
+
+" NCM2
+augroup NCM2
+  autocmd!
+
+    " suppress the annoying 'match x of y', 'The only match' and 'Pattern not
+    " found' messages
+    set shortmess+=c
+
+    " CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
+    inoremap <c-c> <ESC>
+
+    " When the <Enter> key is pressed while the popup menu is visible, it only
+    " hides the menu. Use this mapping to close the menu and also start a new
+    " line.
+    inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+
+    " Use <TAB> to select the popup menu:
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+  " enable ncm2 for all buffers
+  autocmd BufEnter * call ncm2#enable_for_buffer()
+
+  " :help Ncm2PopupOpen for more information
+  set completeopt=noinsert,menuone,noselect
+
+  " When the <Enter> key is pressed while the popup menu is visible, it only
+  " hides the menu. Use this mapping to close the menu and also start a new line.
+  inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+
+  " Don't flicker in my face too much
+  let g:ncm2#complete_delay=180 "delay in ms
+
+  " uncomment this block if you use vimtex for LaTex
+  " autocmd Filetype tex call ncm2#register_source({
+  "           \ 'name': 'vimtex',
+  "           \ 'priority': 8,
+  "           \ 'scope': ['tex'],
+  "           \ 'mark': 'tex',
+  "           \ 'word_pattern': '\w+',
+  "           \ 'complete_pattern': g:vimtex#re#ncm2,
+  "           \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
+  "           \ })
+augroup END
+
+"" Ale
+"let g:ale_lint_on_enter = 0
+"let g:ale_lint_on_text_changed = 'never'
+"let g:ale_echo_msg_error_str = 'E'
+"let g:ale_echo_msg_warning_str = 'W'
+"let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+"let g:ale_linters = {'python': ['flake8']}
+
+" Airline
+let g:airline_theme='sol'
+let g:airline_left_sep  = ''
+let g:airline_right_sep = ''
+let g:airline#extensions#ale#enabled = 1
+let airline#extensions#ale#error_symbol = 'E:'
+let airline#extensions#ale#warning_symbol = 'W:'
 
 " Syntastic.vim {{{
 augroup syntastic_config
