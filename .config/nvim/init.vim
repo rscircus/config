@@ -22,6 +22,9 @@ Plug 'vim-airline/vim-airline-themes'
 
 "" IDE:
 
+" Rainbow Parentheses
+Plug 'luochen1990/rainbow'
+
 " Autocomplete
 Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
@@ -38,6 +41,8 @@ Plug 'preservim/tagbar'
 " Git
 Plug 'tpope/vim-fugitive'
 Plug 'ruanyl/vim-gh-line'
+Plug 'jreybert/vimagit'
+Plug 'mhinz/vim-signify'
 
 " Syntastic
 Plug 'scrooloose/syntastic'
@@ -102,8 +107,12 @@ call plug#end()
 " colorscheme
 let base16colorspace=256
 "colorscheme base16-one-light
+"colorscheme base16-ia-light
 colorscheme acme
 "set background=light
+"
+" I like green comments
+hi Comment guifg=#339933
 
 " True Color Support if it's avaiable in terminal
 if has("termguicolors")
@@ -284,6 +293,9 @@ map <leader>qq :cclose<CR> " close quickfix window
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 "
 
+"" Rainbow:
+let g:rainbow_active = 1  "or :RainbowToggle
+
 "" FZF:
 "" Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
@@ -435,7 +447,7 @@ augroup NCM2
   "           \ })
 augroup END
 
-"" Ale
+"" Ale:
 "let g:ale_lint_on_enter = 0
 "let g:ale_lint_on_text_changed = 'never'
 "let g:ale_echo_msg_error_str = 'E'
@@ -443,7 +455,7 @@ augroup END
 "let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 "let g:ale_linters = {'python': ['flake8']}
 
-" Airline
+"" Airline:
 let g:airline_theme='sol'
 let g:airline_left_sep  = ''
 let g:airline_right_sep = ''
@@ -451,7 +463,7 @@ let g:airline#extensions#ale#enabled = 1
 let airline#extensions#ale#error_symbol = 'E:'
 let airline#extensions#ale#warning_symbol = 'W:'
 
-" Syntastic.vim {{{
+"" Syntastic.vim: {{{
 augroup syntastic_config
   autocmd!
   let g:syntastic_error_symbol = '✗'
@@ -459,6 +471,9 @@ augroup syntastic_config
   let g:syntastic_ruby_checkers = ['mri', 'rubocop']
 augroup END
 " }}}
+
+"" Signify:
+set updatetime=100
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " }}} Plugins Settings
