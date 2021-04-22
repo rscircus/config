@@ -101,7 +101,7 @@ source $ZSH/oh-my-zsh.sh
 
 # EDITOR
 export EDITOR='nvim'
-vman() { man $* | col -b | nvim -c 'set ft=man nomod nolist' -; }
+#export vman() { man $* | col -b | nvim -c 'set ft=man nomod nolist' -; }
 alias vman='vman'
 alias config='/usr/bin/git --git-dir=$HOME/.src/config --work-tree=$HOME'
 alias _='sudo'
@@ -112,6 +112,7 @@ source $HOME/.poetry/env
 # Go
 export GOPATH=$HOME/src/go
 export PATH=$PATH:$GOPATH/bin
+export GO111MODULE=on
 
 # z-jump around
 . $HOME/.local/bin/z.sh
@@ -158,3 +159,18 @@ export PATH=$PATH:$HOME/.local/bin
 
 # flatpaks - TODO: better? Shouldn't the OS manage this?
 export emacs="/usr/bin/flatpak run org.gnu.emacs"
+
+## aliases
+# exa:
+alias la="exa -abghl --git --color=automatic"
+alias lat="exa -abghl --git --tree --color=automatic"
+
+# `cat` with beautiful colors. requires: pip install -U Pygments
+alias c='pygmentize -O style=borland -f console256 -g'
+
+# Go
+export PATH=$PATH:/home/roland/.go/bin
+export PATH=$PATH:/home/roland/src/go/bin
+
+# Rust
+source $HOME/.cargo/env
