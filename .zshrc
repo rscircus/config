@@ -68,7 +68,7 @@ ZSH_THEME="rawland"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(fzf-tab git colorize colored-man-pages command-not-found gnu-utils history-substring-search zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -146,9 +146,6 @@ autoload edit-command-line
 zle -N edit-command-line
 bindkey '^Xe' edit-command-line
 
-# CTRL-SPACE accept autosuggestion:
-bindkey '^ ' autosuggest-accept
-
 # pyenv
 export PATH="/home/roland/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
@@ -168,9 +165,24 @@ alias lat="exa -abghl --git --tree --color=automatic"
 # `cat` with beautiful colors. requires: pip install -U Pygments
 alias c='pygmentize -O style=borland -f console256 -g'
 
+# FZF
+#set -gx FZF_DEFAULT_COMMAND 'rg --files --no-ignore-vcs --hidden'
+
 # Go
 export PATH=$PATH:/home/roland/.go/bin
 export PATH=$PATH:/home/roland/src/go/bin
 
 # Rust
 source $HOME/.cargo/env
+
+# zstyle
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# preview directory's content with exa when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+# switch group using `,` and `.`
+zstyle ':fzf-tab:*' switch-group ',' '.'
