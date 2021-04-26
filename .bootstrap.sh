@@ -99,8 +99,10 @@ sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/to
 
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
+### twf
+
+go get -u github.com/wvanlint/twf/cmd/twf
 
 ### local customization
 
 touch ~/.zshrc_local
-
