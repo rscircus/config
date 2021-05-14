@@ -15,6 +15,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'rscircus/acme-colors'
 Plug 'robertmeta/nofrils'
 Plug 'chriskempson/base16-vim'
+Plug 'morhetz/gruvbox'
 
 " airline
 Plug 'vim-airline/vim-airline'
@@ -108,9 +109,12 @@ call plug#end()
 let base16colorspace=256
 "colorscheme base16-one-light
 "colorscheme base16-ia-light
-colorscheme acme
-"set background=light
-"
+"colorscheme acme
+set background=light
+let g:gruvbox_italic=1
+let g:gruvbox_contrast_light='hard'
+colorscheme gruvbox
+
 " I like green comments
 hi Comment guifg=#339933
 
@@ -127,6 +131,7 @@ endif
 
 
 " Junk
+syntax on
 set cursorline " highlight cursorline
 set encoding=utf-8 nobomb " BOM sucks
 set splitright                " split windows always vertically
@@ -136,7 +141,7 @@ set smartcase                   " ... unless they contain at least one capital l
 set showmatch                   " show matches
 set gdefault                    " replacing globally is default
 set incsearch                   " incremental searching
-set nohlsearch
+set hlsearch
 set number                    " show current line number on the left
 set relativenumber            " show all other line numbers relative
 set autoindent " keep indent from line to line
@@ -243,6 +248,12 @@ augroup END
 let mapleader = ","
 let maplocalleader = "\<Space>"
 
+" Navigate visual lines instead of logical ones
+nnoremap j gj
+nnoremap k gk
+nnoremap $ g$
+nnoremap ^ g^
+
 " Curosorline
 ":hi CursorLine ctermbg=white guibg=white cterm=none gui=none
 :nnoremap <leader>H :set cursorline!<CR>
@@ -297,6 +308,8 @@ map <leader>qq :cclose<CR> " close quickfix window
 let g:rainbow_active = 1  "or :RainbowToggle
 
 "" FZF:
+"let g:fzf_preview_window = ['right:50', 'ctrl-/']
+
 "" Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
 command! -bang -nargs=* GGrep
@@ -406,21 +419,21 @@ noremap <F3> :Autoformat<CR>
 augroup NCM2
   autocmd!
 
-    " suppress the annoying 'match x of y', 'The only match' and 'Pattern not
-    " found' messages
-    set shortmess+=c
+  " suppress the annoying 'match x of y', 'The only match' and 'Pattern not
+  " found' messages
+  set shortmess+=c
 
-    " CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
-    inoremap <c-c> <ESC>
+  " CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
+  inoremap <c-c> <ESC>
 
-    " When the <Enter> key is pressed while the popup menu is visible, it only
-    " hides the menu. Use this mapping to close the menu and also start a new
-    " line.
-    inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+  " When the <Enter> key is pressed while the popup menu is visible, it only
+  " hides the menu. Use this mapping to close the menu and also start a new
+  " line.
+  inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
 
-    " Use <TAB> to select the popup menu:
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+  " Use <TAB> to select the popup menu:
+  inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
   " enable ncm2 for all buffers
   autocmd BufEnter * call ncm2#enable_for_buffer()
@@ -446,14 +459,6 @@ augroup NCM2
   "           \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
   "           \ })
 augroup END
-
-"" Ale:
-"let g:ale_lint_on_enter = 0
-"let g:ale_lint_on_text_changed = 'never'
-"let g:ale_echo_msg_error_str = 'E'
-"let g:ale_echo_msg_warning_str = 'W'
-"let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-"let g:ale_linters = {'python': ['flake8']}
 
 "" Airline:
 let g:airline_theme='sol'
