@@ -68,7 +68,7 @@ ZSH_THEME="rawland"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(fzf-tab git colorize colored-man-pages command-not-found gnu-utils history-substring-search zsh-syntax-highlighting)
+plugins=(fzf-tab git colorize colored-man-pages command-not-found gnu-utils history-substring-search zsh-syntax-highlighting zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -145,6 +145,7 @@ setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^Xe' edit-command-line
+bindkey '^ ' autosuggest-accept #use zsh-autosuggestion
 
 # pyenv
 export PATH="/home/roland/.pyenv/bin:$PATH"
@@ -164,6 +165,9 @@ alias lat="exa -abghl --git --tree --color=automatic"
 
 # `cat` with beautiful colors. requires: pip install -U Pygments
 alias c='pygmentize -O style=borland -f console256 -g'
+
+# open
+alias o='xdg-open'
 
 # FZF
 #set -gx FZF_DEFAULT_COMMAND 'rg --files --no-ignore-vcs --hidden'
