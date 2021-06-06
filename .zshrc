@@ -101,6 +101,7 @@ source $ZSH/oh-my-zsh.sh
 
 # EDITOR
 export EDITOR='nvim'
+export BAT_THEME='ansi-light'
 #export vman() { man $* | col -b | nvim -c 'set ft=man nomod nolist' -; }
 alias vman='vman'
 alias config='/usr/bin/git --git-dir=$HOME/.src/config --work-tree=$HOME'
@@ -108,11 +109,6 @@ alias _='sudo'
 
 # Poetry
 source $HOME/.poetry/env
-
-# Go
-export GOPATH=$HOME/src/go
-export PATH=$PATH:$GOPATH/bin
-export GO111MODULE=on
 
 # z-jump around
 . $HOME/.local/bin/z.sh
@@ -172,9 +168,15 @@ alias o='xdg-open'
 # FZF
 #set -gx FZF_DEFAULT_COMMAND 'rg --files --no-ignore-vcs --hidden'
 
+# zoxide
+eval "$(zoxide init zsh)"
+
 # Go
+export GOPATH=$HOME/src/go
+export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:/home/roland/.go/bin
-export PATH=$PATH:/home/roland/src/go/bin
+export GO111MODULE=on
+
 
 # Rust
 source $HOME/.cargo/env
@@ -190,3 +192,4 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
+
