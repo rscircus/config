@@ -68,7 +68,7 @@ ZSH_THEME="rawland"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(fzf-tab git colorize colored-man-pages command-not-found gnu-utils history-substring-search zsh-syntax-highlighting zsh-autosuggestions)
+plugins=(fzf-tab git colorize colored-man-pages command-not-found gnu-utils history-substring-search zsh-syntax-highlighting zsh-autosuggestions zsh-proxy)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -156,6 +156,7 @@ export emacs="/usr/bin/flatpak run org.gnu.emacs"
 
 ## aliases
 # exa:
+alias l="exa -abghl --git --color=automatic"
 alias la="exa -abghl --git --color=automatic"
 alias lat="exa -abghl --git --tree --color=automatic"
 

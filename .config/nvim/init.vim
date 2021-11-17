@@ -16,6 +16,7 @@ Plug 'rscircus/acme-colors'
 Plug 'robertmeta/nofrils'
 Plug 'chriskempson/base16-vim'
 Plug 'morhetz/gruvbox'
+Plug 'ajgrf/parchment'
 
 " airline
 Plug 'vim-airline/vim-airline'
@@ -27,11 +28,11 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'luochen1990/rainbow'
 
 " Autocomplete
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-path'
-Plug 'ncm2/ncm2-jedi'
+"FIXME: Plug 'ncm1/ncm2'
+"FIXME: Plug 'roxma/nvim-yarp'
+"FIXME: Plug 'ncm2/ncm2-bufword'
+"FIXME: Plug 'ncm2/ncm2-path'
+"FIXME: Plug 'ncm2/ncm2-jedi'
 
 " Formatter
 Plug 'Chiel92/vim-autoformat'
@@ -113,17 +114,17 @@ let base16colorspace=256
 set background=light
 let g:gruvbox_italic=1
 let g:gruvbox_contrast_light='hard'
-colorscheme gruvbox
+colorscheme parchment
 
 " I like green comments
 hi Comment guifg=#339933
 
 " True Color Support if it's avaiable in terminal
 if has("termguicolors")
-    set termguicolors
+        set termguicolors
 endif
 if has("gui_running")
-  set guicursor=n-v-c-sm:block,i-ci-ve:block,r-cr-o:blocks
+        set guicursor=n-v-c-sm:block,i-ci-ve:block,r-cr-o:blocks
 endif
 
 " TODO: old love...
@@ -160,17 +161,17 @@ set formatoptions+=1 " Break before 1-letter words
 " Handling Undo/Backup/Swap: {{{
 " Create ~/.config/nvim/files if not existing
 if exists('*mkdir') && !isdirectory($HOME.'/.config/nvim/files')
-  call mkdir($HOME.'/.config/nvim/files')
-  call mkdir($HOME.'/.config/nvim/files/backup')
-  call mkdir($HOME.'/.config/nvim/files/undo')
-  call mkdir($HOME.'/.config/nvim/files/info')
+        call mkdir($HOME.'/.config/nvim/files')
+        call mkdir($HOME.'/.config/nvim/files/backup')
+        call mkdir($HOME.'/.config/nvim/files/undo')
+        call mkdir($HOME.'/.config/nvim/files/info')
 endif
 
 if has('persistent_undo')
-    set undofile             " creates a <FILENAME>.un~ for eternal editing
-    set undolevels=1000
-    set undodir=$HOME/.config/nvim/files/undo/
-    set undoreload=10000
+        set undofile             " creates a <FILENAME>.un~ for eternal editing
+        set undolevels=1000
+        set undodir=$HOME/.config/nvim/files/undo/
+        set undoreload=10000
 endif
 
 set backup
@@ -203,38 +204,38 @@ tnoremap <Esc> <C-\><C-n>
 au BufEnter * if &buftype == 'terminal' | :startinsert | endif
 " open terminal on ctrl+n
 function! OpenTerminal()
-  split term://zsh
-  resize 10
+        split term://zsh
+        resize 10
 endfunction
 nnoremap <leader>:call OpenTerminal()<CR>
 
 " Speed up transition from modes
 if !has('gui_running')
-  set ttimeoutlen=10
-  augroup FastEscape
-    autocmd!
-    au InsertEnter * set timeoutlen=0
-    au InsertLeave * set timeoutlen=1000
-  augroup END
+        set ttimeoutlen=10
+        augroup FastEscape
+                autocmd!
+                au InsertEnter * set timeoutlen=0
+                au InsertLeave * set timeoutlen=1000
+        augroup END
 endif
 " }}}
 
 " Word Processor Mode
 augroup word_processor_mode
-  autocmd!
+        autocmd!
 
-  function! WordProcessorMode() " {{{
-    setlocal formatoptions=t1
-    map j gj
-    map k gk
-    setlocal smartindent
-    setlocal spell spelllang=en_ca
-    setlocal noexpandtab
-    setlocal wrap
-    setlocal linebreak
-    Goyo 100
-  endfunction " }}}
-  com! WP call WordProcessorMode()
+        function! WordProcessorMode() " {{{
+                setlocal formatoptions=t1
+                map j gj
+                map k gk
+                setlocal smartindent
+                setlocal spell spelllang=en_ca
+                setlocal noexpandtab
+                setlocal wrap
+                setlocal linebreak
+                Goyo 100
+        endfunction " }}}
+        com! WP call WordProcessorMode()
 augroup END
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -313,14 +314,14 @@ let g:rainbow_active = 1  "or :RainbowToggle
 "" Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
 command! -bang -nargs=* GGrep
-  \ call fzf#vim#grep(
-  \   'git grep --line-number '.shellescape(<q-args>), 0,
-  \   { 'dir': systemlist('git rev-parse --show-toplevel')[0] }, <bang>0)
+                        \ call fzf#vim#grep(
+                        \   'git grep --line-number '.shellescape(<q-args>), 0,
+                        \   { 'dir': systemlist('git rev-parse --show-toplevel')[0] }, <bang>0)
 
 " Override Colors command. You can safely do this in your .vimrc as fzf.vim
 " will not override existing commands.
 command! -bang Colors
-  \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
+                        \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
 
 " Augmenting Ag command using fzf#vim#with_preview function
 "   * fzf#vim#with_preview([[options], [preview window], [toggle keys...]])
@@ -333,22 +334,22 @@ command! -bang Colors
 "   :Ag  - Start fzf with hidden preview window that can be enabled with "?" key
 "   :Ag! - Start fzf in fullscreen and display the preview window above
 command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>,
-  \                 <bang>1 ? fzf#vim#with_preview('up:60%')
-  \                         : fzf#vim#with_preview('right:50%', '?'),
-  \                 <bang>0)
+                        \ call fzf#vim#ag(<q-args>,
+                        \                 <bang>1 ? fzf#vim#with_preview('up:60%')
+                        \                         : fzf#vim#with_preview('right:50%', '?'),
+                        \                 <bang>0)
 
 " Similarly, we can apply it to fzf#vim#grep. To use ripgrep instead of ag:
 command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-  \   <bang>1 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \   <bang>0)
+                        \ call fzf#vim#grep(
+                        \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+                        \   <bang>1 ? fzf#vim#with_preview('up:60%')
+                        \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+                        \   <bang>0)
 
 " Likewise, Files command with preview window
 command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+                        \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
 nnoremap <c-p> :Files<cr>
 
@@ -371,10 +372,10 @@ let g:NERDTreeGitStatusWithFlags = 1
 " Call NERDTreeFind iff NERDTree is active, current window contains a modifiable
 " file, and we're not in vimdiff
 function! SyncTree()
-  if &modifiable && expand('%:e') == '.git/COMMIT_EDITMSG' && strlen(expand('%')) > 0 && !&diff
-    NERDTreeFind
-    wincmd p
-  endif
+        if &modifiable && expand('%:e') == '.git/COMMIT_EDITMSG' && strlen(expand('%')) > 0 && !&diff
+                NERDTreeFind
+                wincmd p
+        endif
 endfunction
 
 " Highlight currently open buffer in NERDTree
@@ -416,49 +417,49 @@ let g:vim_markdown_json_frontmatter = 1  " for JSON format
 noremap <F3> :Autoformat<CR>
 
 " NCM2
-augroup NCM2
-  autocmd!
-
-  " suppress the annoying 'match x of y', 'The only match' and 'Pattern not
-  " found' messages
-  set shortmess+=c
-
-  " CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
-  inoremap <c-c> <ESC>
-
-  " When the <Enter> key is pressed while the popup menu is visible, it only
-  " hides the menu. Use this mapping to close the menu and also start a new
-  " line.
-  inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
-
-  " Use <TAB> to select the popup menu:
-  inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
-  " enable ncm2 for all buffers
-  autocmd BufEnter * call ncm2#enable_for_buffer()
-
-  " :help Ncm2PopupOpen for more information
-  set completeopt=noinsert,menuone,noselect
-
-  " When the <Enter> key is pressed while the popup menu is visible, it only
-  " hides the menu. Use this mapping to close the menu and also start a new line.
-  inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
-
-  " Don't flicker in my face too much
-  let g:ncm2#complete_delay=180 "delay in ms
-
-  " uncomment this block if you use vimtex for LaTex
-  " autocmd Filetype tex call ncm2#register_source({
-  "           \ 'name': 'vimtex',
-  "           \ 'priority': 8,
-  "           \ 'scope': ['tex'],
-  "           \ 'mark': 'tex',
-  "           \ 'word_pattern': '\w+',
-  "           \ 'complete_pattern': g:vimtex#re#ncm2,
-  "           \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
-  "           \ })
-augroup END
+"FIXME: augroup NCM2
+"FIXME:   autocmd!
+"FIXME:
+"FIXME:   " suppress the annoying 'match x of y', 'The only match' and 'Pattern not
+"FIXME:   " found' messages
+"FIXME:   set shortmess+=c
+"FIXME:
+"FIXME:   " CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
+"FIXME:   inoremap <c-c> <ESC>
+"FIXME:
+"FIXME:   " When the <Enter> key is pressed while the popup menu is visible, it only
+"FIXME:   " hides the menu. Use this mapping to close the menu and also start a new
+"FIXME:   " line.
+"FIXME:   inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+"FIXME:
+"FIXME:   " Use <TAB> to select the popup menu:
+"FIXME:   inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+"FIXME:   inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+"FIXME:
+"FIXME:   " enable ncm2 for all buffers
+"FIXME:   autocmd BufEnter * call ncm2#enable_for_buffer()
+"FIXME:
+"FIXME:   " :help Ncm2PopupOpen for more information
+"FIXME:   set completeopt=noinsert,menuone,noselect
+"FIXME:
+"FIXME:   " When the <Enter> key is pressed while the popup menu is visible, it only
+"FIXME:   " hides the menu. Use this mapping to close the menu and also start a new line.
+"FIXME:   inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+"FIXME:
+"FIXME:   " Don't flicker in my face too much
+"FIXME:   let g:ncm2#complete_delay=180 "delay in ms
+"FIXME:
+"FIXME:   " uncomment this block if you use vimtex for LaTex
+"FIXME:   " autocmd Filetype tex call ncm2#register_source({
+"FIXME:   "           \ 'name': 'vimtex',
+"FIXME:   "           \ 'priority': 8,
+"FIXME:   "           \ 'scope': ['tex'],
+"FIXME:   "           \ 'mark': 'tex',
+"FIXME:   "           \ 'word_pattern': '\w+',
+"FIXME:   "           \ 'complete_pattern': g:vimtex#re#ncm2,
+"FIXME:   "           \ 'on_complete': ['ncm2#on_complete#omni', 'vimtex#complete#omnifunc'],
+"FIXME:   "           \ })
+"FIXME: augroup END
 
 "" Airline:
 let g:airline_theme='sol'
@@ -470,10 +471,10 @@ let airline#extensions#ale#warning_symbol = 'W:'
 
 "" Syntastic.vim: {{{
 augroup syntastic_config
-  autocmd!
-  let g:syntastic_error_symbol = '✗'
-  let g:syntastic_warning_symbol = '⚠'
-  let g:syntastic_ruby_checkers = ['mri', 'rubocop']
+        autocmd!
+        let g:syntastic_error_symbol = '✗'
+        let g:syntastic_warning_symbol = '⚠'
+        let g:syntastic_ruby_checkers = ['mri', 'rubocop']
 augroup END
 " }}}
 
