@@ -18,14 +18,36 @@ Plug 'chriskempson/base16-vim'
 Plug 'morhetz/gruvbox'
 Plug 'ajgrf/parchment'
 
-" airline
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+"" airline
+"Plug 'vim-airline/vim-airline'
+"Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-lualine/lualine.nvim'
+
+" Git signs
+Plug 'lewis6991/gitsigns.nvim'
+
+" Web Devicons
+Plug 'kyazdani42/nvim-web-devicons'
 
 "" IDE:
 
 " Rainbow Parentheses
 Plug 'luochen1990/rainbow'
+
+" Better syntax-highlighting for filetypes in vim
+Plug 'sheerun/vim-polyglot'
+
+" Switch to the begining and the end of a block by pressing %
+Plug 'tmhedberg/matchit'
+
+" Colorize HEX colors
+Plug 'norcalli/nvim-colorizer.lua'
+
+" Add indentation guides even on blank lines
+Plug 'lukas-reineke/indent-blankline.nvim'
+
+" Format
+Plug 'sbdchd/neoformat'
 
 " Autocomplete
 "FIXME: Plug 'ncm1/ncm2'
@@ -36,6 +58,10 @@ Plug 'luochen1990/rainbow'
 "
 " LSP
 Plug 'neovim/nvim-lspconfig'
+
+" https://github.com/weilbith/nvim-code-action-menu#usage
+"Plug 'weilbith/nvim-code-action-menu'
+Plug 'glepnir/lspsaga.nvim'
 
 " Documentation - https://github.com/ms-jpq/coq_nvim#install
 Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
@@ -56,17 +82,19 @@ Plug 'Chiel92/vim-autoformat'
 
 " Git
 Plug 'tpope/vim-fugitive'
-Plug 'ruanyl/vim-gh-line'
+"Plug 'ruanyl/vim-gh-line'
 Plug 'jreybert/vimagit'
 Plug 'mhinz/vim-signify'
 
 " Syntastic
-Plug 'scrooloose/syntastic'
+"Plug 'scrooloose/syntastic'
 " Shows a lightbuld for code action :)
 Plug 'kosayoda/nvim-lightbulb'
 
 " Fuzzy find stuff
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'sharkdp/fd'
 
 " Search and replace over many files
 Plug 'brooth/far.vim'
@@ -246,7 +274,6 @@ if !has('gui_running')
                 au InsertLeave * set timeoutlen=1000
         augroup END
 endif
-" }}}
 
 " Word Processor Mode
 augroup word_processor_mode
@@ -265,6 +292,8 @@ augroup word_processor_mode
         endfunction " }}}
         com! WP call WordProcessorMode()
 augroup END
+
+" }}}
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " }}} Basic Settings
@@ -336,12 +365,28 @@ map <leader>qq :cclose<CR> " close quickfix window
 "" Rainbow:
 let g:rainbow_active = 1  "or :RainbowToggle
 
+"" Telescope:
+
+lua << EOF
+require('telescope').setup {
+        fzf = {
+                fuzzy = true,
+                override_generic_sorter = true,
+                override_file_sorter = true,
+                case_mode = "ignore_case",
+                }
+        }
+EOF
+
 nnoremap <c-p> :Telescope find_files<cr>
 " Find files using Telescope command-line sugar.
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>fr <cmd>lua require('telescope.builtin').lsp_references()<cr>
+nnoremap <leader>fd <cmd>lua require('telescope.builtin').lsp_definitions()<cr>
+nnoremap <leader>ft <cmd>lua require('telescope.builtin').lsp_type_definitions()<cr>
 
 "" Neomake:
 " Full config: when writing or reading a buffer, and on changes in insert and
@@ -456,6 +501,40 @@ let g:airline#extensions#ale#enabled = 1
 let airline#extensions#ale#error_symbol = 'E:'
 let airline#extensions#ale#warning_symbol = 'W:'
 
+"" Lualine:
+lua << END
+require'lualine'.setup{
+        options = {
+                theme = 'onelight',
+                section_separators = '|',
+                component_separators = '',
+                disabled_filetypes = {}
+                },
+        sections = {
+                lualine_a = {'mode'},
+                lualine_b = {'branch'},
+                lualine_c = {'filename'},
+                lualine_x = {
+                        { 'diagnostics', sources = {"nvim_diagnostic"}, symbols = {error = ' ', warn = ' ', info = ' ', hint = ' '} },
+                        'encoding',
+                        'filetype'
+                        },
+                lualine_y = {'progress'},
+                lualine_z = {'location'}
+                },
+        inactive_sections = {
+                lualine_a = {},
+                lualine_b = {},
+                lualine_c = {'filename'},
+                lualine_x = {'location'},
+                lualine_y = {},
+                lualine_z = {}
+                },
+        tabline = {},
+        extensions = {'fugitive'}
+}
+END
+
 "" Syntastic.vim: {{{
 augroup syntastic_config
         autocmd!
@@ -473,23 +552,131 @@ set updatetime=100
 
 "" Norg:
 lua << EOF
-    require('neorg').setup {
+require('neorg').setup {
         -- Tell Neorg what modules to load
         load = {
-            ["core.defaults"] = {}, -- Load all the default modules
-            ["core.norg.concealer"] = {}, -- Allows for use of icons
-            ["core.norg.dirman"] = { -- Manage your directories with Neorg
+                ["core.defaults"] = {}, -- Load all the default modules
+                ["core.norg.concealer"] = {}, -- Allows for use of icons
+                ["core.norg.dirman"] = { -- Manage your directories with Neorg
                 config = {
-                    workspaces = {
-                        my_workspace = "~/neorg"
-                    }
+                        workspaces = {
+                                my_workspace = "~/neorg"
+                                }
+                        }
                 }
-            }
         },
-    }
+}
 EOF
+
+"" LSP
+lua << EOF
+
+local nvim_lsp = require('lspconfig')
+local on_attach = function(client, bufnr)
+local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+-- Enable completion triggered by <c-x><c-o>
+buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+-- Mappings.
+local opts = { noremap=true, silent=true }
+
+-- See `:help vim.lsp.*` for documentation on any of the below functions
+buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+buf_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+buf_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+buf_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+buf_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+
+protocol.CompletionItemKind = {
+        '', -- Text
+        '', -- Method
+        '', -- Function
+        '', -- Constructor
+        '', -- Field
+        '', -- Variable
+        '', -- Class
+        'ﰮ', -- Interface
+        '', -- Module
+        '', -- Property
+        '', -- Unit
+        '', -- Value
+        '', -- Enum
+        '', -- Keyword
+        '﬌', -- Snippet
+        '', -- Color
+        '', -- File
+        '', -- Reference
+        '', -- Folder
+        '', -- EnumMember
+        '', -- Constant
+        '', -- Struct
+        '', -- Event
+        'ﬦ', -- Operator
+        '', -- TypeParameter
+        }
+end
+
+
+-- Use a loop to conveniently call 'setup' on multiple servers and
+-- map buffer local keybindings when the language server attaches
+local servers = { 'pyright', 'rust_analyzer', 'tsserver' }
+for _, lsp in ipairs(servers) do
+        nvim_lsp[lsp].setup {
+                on_attach = on_attach,
+                flags = {
+                        debounce_text_changes = 150,
+                        }
+                }
+
+end
+EOF
+
+"" LSP Saga
+lua << EOF
+local saga = require 'lspsaga'
+saga.init_lsp_saga {
+        error_sign = '',
+        warn_sign = '',
+        hint_sign = '',
+        infor_sign = '',
+        border_style = "round",
+        }
+EOF
+
+nnoremap <silent>K :Lspsaga hover_doc<CR>
+
+
+" lua << EOF
+"         -- lsp provider to find the cursor word definition and reference
+"         nnoremap <silent> gh <cmd>lua require'lspsaga.provider'.lsp_finder()<CR>
+"         -- or use command LspSagaFinder
+"         nnoremap <silent> gh :Lspsaga lsp_finder<CR>
+"         -- code action
+"         nnoremap <silent><leader>ca <cmd>lua require('lspsaga.codeaction').code_action()<CR>
+"         vnoremap <silent><leader>ca :<C-U>lua require('lspsaga.codeaction').range_code_action()<CR>
+"         -- or use command
+"         nnoremap <silent><leader>ca :Lspsaga code_action<CR>
+"         vnoremap <silent><leader>ca :<C-U>Lspsaga range_code_action<CR>
+" 
+" EOF
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " }}} Plugins Settings
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+" Automatically source $MYVIMRC after save
+autocmd! bufwritepost $MYVIMRC source $MYVIMRC
