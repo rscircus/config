@@ -33,12 +33,26 @@ Plug 'luochen1990/rainbow'
 "FIXME: Plug 'ncm2/ncm2-bufword'
 "FIXME: Plug 'ncm2/ncm2-path'
 "FIXME: Plug 'ncm2/ncm2-jedi'
+"
+" LSP
+Plug 'neovim/nvim-lspconfig'
+
+" Documentation - https://github.com/ms-jpq/coq_nvim#install
+Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+" 9000+ Snippets
+Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
+
+" lua & third party sources -- See https://github.com/ms-jpq/coq.thirdparty
+" Need to **configure separately**
+Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
+" - shell repl
+" - nvim lua api
+" - scientific calculator
+" - comment banner
+" - etc
 
 " Formatter
 Plug 'Chiel92/vim-autoformat'
-
-" Tagbar - document outline
-Plug 'preservim/tagbar'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -48,10 +62,11 @@ Plug 'mhinz/vim-signify'
 
 " Syntastic
 Plug 'scrooloose/syntastic'
+" Shows a lightbuld for code action :)
+Plug 'kosayoda/nvim-lightbulb'
 
-" FZF
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --no-update-rc' }
-Plug 'junegunn/fzf.vim'
+" Fuzzy find stuff
+Plug 'nvim-telescope/telescope.nvim'
 
 " Search and replace over many files
 Plug 'brooth/far.vim'
@@ -62,6 +77,10 @@ Plug 'neomake/neomake'
 " File tree
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin' " ... and git
+
+" Symbol tree
+Plug 'simrat39/symbols-outline.nvim'
+
 
 " Tmux interop
 Plug 'christoomey/vim-tmux-navigator'
@@ -74,6 +93,15 @@ Plug 'flebel/vim-scroll-position'
 
 " Highlight yank
 Plug 'machakann/vim-highlightedyank'
+
+"" Organization:
+
+" Org Mode basis
+Plug 'nvim-neorg/neorg' | Plug 'nvim-lua/plenary.nvim'
+
+" Due date in Todos like so: `- do sth <2021-12-12> due: 1w 1d`
+Plug 'NFrid/due.nvim'
+
 
 "" Writing:
 
@@ -308,50 +336,12 @@ map <leader>qq :cclose<CR> " close quickfix window
 "" Rainbow:
 let g:rainbow_active = 1  "or :RainbowToggle
 
-"" FZF:
-"let g:fzf_preview_window = ['right:50', 'ctrl-/']
-
-"" Command for git grep
-" - fzf#vim#grep(command, with_column, [options], [fullscreen])
-command! -bang -nargs=* GGrep
-                        \ call fzf#vim#grep(
-                        \   'git grep --line-number '.shellescape(<q-args>), 0,
-                        \   { 'dir': systemlist('git rev-parse --show-toplevel')[0] }, <bang>0)
-
-" Override Colors command. You can safely do this in your .vimrc as fzf.vim
-" will not override existing commands.
-command! -bang Colors
-                        \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
-
-" Augmenting Ag command using fzf#vim#with_preview function
-"   * fzf#vim#with_preview([[options], [preview window], [toggle keys...]])
-"     * For syntax-highlighting, Ruby and any of the following tools are required:
-"       - Bat: https://github.com/sharkdp/bat
-"       - Highlight: http://www.andre-simon.de/doku/highlight/en/highlight.php
-"       - CodeRay: http://coderay.rubychan.de/
-"       - Rouge: https://github.com/jneen/rouge
-"
-"   :Ag  - Start fzf with hidden preview window that can be enabled with "?" key
-"   :Ag! - Start fzf in fullscreen and display the preview window above
-command! -bang -nargs=* Ag
-                        \ call fzf#vim#ag(<q-args>,
-                        \                 <bang>1 ? fzf#vim#with_preview('up:60%')
-                        \                         : fzf#vim#with_preview('right:50%', '?'),
-                        \                 <bang>0)
-
-" Similarly, we can apply it to fzf#vim#grep. To use ripgrep instead of ag:
-command! -bang -nargs=* Rg
-                        \ call fzf#vim#grep(
-                        \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-                        \   <bang>1 ? fzf#vim#with_preview('up:60%')
-                        \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-                        \   <bang>0)
-
-" Likewise, Files command with preview window
-command! -bang -nargs=? -complete=dir Files
-                        \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-
-nnoremap <c-p> :Files<cr>
+nnoremap <c-p> :Telescope find_files<cr>
+" Find files using Telescope command-line sugar.
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 "" Neomake:
 " Full config: when writing or reading a buffer, and on changes in insert and
@@ -384,9 +374,6 @@ autocmd BufEnter * call SyncTree()
 " Close NERDTree if it is the last buffer open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-
-"" Tagbar
-nmap <leader>t :TagbarToggle<CR>
 
 "" TmuxNavigator:
 let g:tmux_navigator_save_on_switch = 2
@@ -477,9 +464,30 @@ augroup syntastic_config
         let g:syntastic_ruby_checkers = ['mri', 'rubocop']
 augroup END
 " }}}
+"
+" 💡 always
+autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
 
 "" Signify:
 set updatetime=100
+
+"" Norg:
+lua << EOF
+    require('neorg').setup {
+        -- Tell Neorg what modules to load
+        load = {
+            ["core.defaults"] = {}, -- Load all the default modules
+            ["core.norg.concealer"] = {}, -- Allows for use of icons
+            ["core.norg.dirman"] = { -- Manage your directories with Neorg
+                config = {
+                    workspaces = {
+                        my_workspace = "~/neorg"
+                    }
+                }
+            }
+        },
+    }
+EOF
 
 " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 " }}} Plugins Settings
