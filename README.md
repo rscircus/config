@@ -32,7 +32,7 @@ echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $H
 and avoid tangling with git
 
 ```bash
-echo ".src/config" >> .gitignore
+echo ".src/config" >> ~/.gitignore
 ```
 
 If you are prepared, you can checkout directly:
